@@ -7,6 +7,8 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using Microsoft.Bot.Connector;
 using Newtonsoft.Json;
+using Microsoft.Bot.Builder.Dialogs;
+using ParkingBot.Models.DialogControl;
 
 namespace ParkingBot
 {
@@ -19,24 +21,39 @@ namespace ParkingBot
         /// </summary>
         public async Task<HttpResponseMessage> Post([FromBody]Activity activity)
         {
+            ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
+            
             if (activity.Type == ActivityTypes.Message)
             {
-                ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
-                // calculate something for us to return
-                int length = (activity.Text ?? string.Empty).Length;
+                //if (!string.IsNullOrEmpty(activity.Text) || act)
+                //{
+                //await activity.GetStateClient().BotState
+                //.DeleteStateForUserWithHttpMessagesAsync(activity.ChannelId, activity.From.Id);
 
-                // return our reply to the user
-                Activity reply = activity.CreateReply($"You sent {activity.Text} which was {length} characters");
-                await connector.Conversations.ReplyToActivityAsync(reply);
+                //var client = new ConnectorClient(new Uri(activity.ServiceUrl));
+                //var clearMsg = activity.CreateReply();
+                //clearMsg.Text = $"Reseting everything for conversation: {activity.Conversation.Id}";
+                //await client.Conversations.SendToConversationAsync(clearMsg);
+                await Conversation.SendAsync(activity, () => new RootDialog(activity.ChannelId));
+                //}
+                //else
+                //{
+                //    var respuesta = activity.CreateReply("Lo siento, aun no puedo procesar archivos multimedia...");
+                //    await connector.Conversations.SendToConversationAsync(respuesta);
+                //}
             }
             else
             {
-                HandleSystemMessage(activity);
+                Activity mensajeRespuesta = HandleSystemMessage(activity);
+                if (mensajeRespuesta != null)
+                {
+                    await connector.Conversations.SendToConversationAsync(mensajeRespuesta);
+                }
             }
             var response = Request.CreateResponse(HttpStatusCode.OK);
             return response;
         }
-
+        #region eventHandler
         private Activity HandleSystemMessage(Activity message)
         {
             if (message.Type == ActivityTypes.DeleteUserData)
@@ -65,5 +82,6 @@ namespace ParkingBot
 
             return null;
         }
+        #endregion
     }
 }
