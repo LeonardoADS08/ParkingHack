@@ -3,6 +3,7 @@ var router = express.Router();
 var ctrlUser = require("../controllers/user-controller.js");
 var ctrlKeeper = require("../controllers/keeper-controller.js");
 var ctrlParkingSpot = require("../controllers/parkingSpot-controller.js");
+var ctrlHistory = require("../controllers/history-controller.js");
 router.route("/prueba").get(ctrlUser.prueba);
 
 //USER
@@ -35,5 +36,14 @@ router.route("/parkingSpot/:spotId")
 .put(ctrlParkingSpot.updateSpot)
 .delete(ctrlParkingSpot.deleteSpot);
 
+//HISTORY
+router.route("/history")
+.post(ctrlHistory.addHistory)
+.get(ctrlHistory.getHistories);
+
+router.route("/history/:historyId")
+.put(ctrlHistory.updateHistory)
+.get(ctrlHistory.getHistory)
+.delete(ctrlHistory.deleteHistory);
 
 module.exports = router;
