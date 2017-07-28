@@ -1,4 +1,5 @@
-﻿using Parking_Services.Models;
+﻿using Newtonsoft.Json.Linq;
+using Parking_Services.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -74,6 +75,62 @@ namespace Parking_Services.Services
                     var objText = reader.ReadToEnd();
                     var myResponse = (Respuestas)js.Deserialize(objText, typeof(Respuestas));
 
+                    return myResponse;
+                }
+            }
+#pragma warning disable CS0168 // La variable está declarada pero nunca se usa
+            catch (Exception e)
+#pragma warning restore CS0168 // La variable está declarada pero nunca se usa
+            {
+#pragma warning disable CS4014 // Ya que no se esperaba esta llamada, la ejecución del método actual continúa antes de que se complete la llamada
+                Services.Mailing.SendEmail("i-jgutierrez@cotas.com", "Jorge", Newtonsoft.Json.JsonConvert.SerializeObject(e.Message, Newtonsoft.Json.Formatting.Indented), "service");
+#pragma warning restore CS4014 // Ya que no se esperaba esta llamada, la ejecución del método actual continúa antes de que se complete la llamada
+
+                return null;
+            }
+
+        }
+
+        public JObject MakeHttpRequestString(String url, String method = "GET", Object data = null)
+        {
+            try
+            {
+                HttpWebRequest request = WebRequest.Create(url) as HttpWebRequest;
+                request.Method = method;
+                request.ContentType = "urlcoded";// urlcoded  application/json; charset=utf-8
+                request.Expect = "application/json";
+                request.PreAuthenticate = true;
+                request.UseDefaultCredentials = true;
+
+                if (data != null)
+                {
+                    using (Stream s = new MemoryStream())
+                    {
+                        var formatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
+                        formatter.Serialize(s, data);
+                    }
+                    using (var streamWriter = new StreamWriter(request.GetRequestStream()))
+                    {
+                        string json = new JavaScriptSerializer().Serialize(data);
+
+                        streamWriter.Write(json);
+                        streamWriter.Flush();
+                        streamWriter.Close();
+                    }
+                }
+                else
+                {
+                    request.ContentLength = 0;
+                }
+
+
+                HttpWebResponse response = request.GetResponse() as HttpWebResponse;
+                using (var reader = new StreamReader(response.GetResponseStream()))
+                {
+                    JavaScriptSerializer js = new JavaScriptSerializer();
+                    var objText = reader.ReadToEnd();
+                    //var myResponse = (Respuestas)js.Deserialize(objText, typeof(Respuestas));
+                    var myResponse = JObject.Parse(objText);
                     return myResponse;
                 }
             }
