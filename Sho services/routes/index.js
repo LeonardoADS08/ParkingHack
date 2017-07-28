@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var ctrlUser = require("../controllers/user-controller.js");
 var ctrlKeeper = require("../controllers/keeper-controller.js");
+var ctrlParkingSpot = require("../controllers/parkingSpot-controller.js");
 router.route("/prueba").get(ctrlUser.prueba);
 
 //USER
@@ -23,4 +24,16 @@ router.route("/keeper/:keeperId")
 .get(ctrlKeeper.getKeeper)
 .put(ctrlKeeper.updateKeeper)
 .delete(ctrlKeeper.deleteKeeper);
+
+//PARKING SPOTS
+router.route("/parkingSpot")
+.post(ctrlParkingSpot.addSpot)
+.get(ctrlParkingSpot.getSpots);
+
+router.route("/parkingSpot/:spotId")
+.get(ctrlParkingSpot.getSpot)
+.put(ctrlParkingSpot.updateSpot)
+.delete(ctrlParkingSpot.deleteSpot);
+
+
 module.exports = router;
