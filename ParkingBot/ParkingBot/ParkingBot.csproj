@@ -143,6 +143,7 @@
     <Compile Include="Models\Facebook\FacebookShareAction\Dependencies\FacebookGenericTemplateContent.cs" />
     <Compile Include="Models\Facebook\FacebookShareAction\Dependencies\FacebookShareButton.cs" />
     <Compile Include="Models\Facebook\FacebookShareAction\FBShareForwardAction.cs" />
+    <Compile Include="Models\MenuFact.cs" />
     <Compile Include="Models\Response.cs" />
     <Compile Include="Models\servicemodels\dtoCoordenadas.cs" />
     <Compile Include="Models\servicemodels\nearest\RootObject.cs" />

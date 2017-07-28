@@ -6,7 +6,7 @@ using System.Web;
 namespace ParkingBot.Models.DialogControl
 {
     [Serializable]
-    public class PlacaDialogDialog:IDialog
+    public class PlacaDialogDialog //ahorita lo cambio JOBEM
     {
     }
 }

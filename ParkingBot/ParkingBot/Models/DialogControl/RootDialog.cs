@@ -91,13 +91,21 @@ namespace ParkingBot.Models.DialogControl
                     List<string> nombres = new List<string>();
                     foreach(var item in ubicaciones)
                     {
+                        
                         string elemento = string.Empty;
                         elemento = item.Name;
                         nombres.Add(elemento);
                     }
+                    string recomendacion = DevolverMejorOpcion(lat, lng);
                     var cards= constructorcartas.CreateHeroCards(ubicaciones,locationNames:nombres);
                     respuesta.Attachments = cards.Select(c => c.ToAttachment()).ToList();
+
+                    var recomienda = context.MakeMessage();
+                    recomienda.SuggestedActions = MenuFact.DetallesQuickReplies(ubicaciones.Count);
+                    recomienda.Text = recomendacion;
+                    
                     await context.PostAsync(respuesta);
+                    await context.PostAsync(recomienda);
                 }
 
                 context.Done<string>(null);
@@ -140,6 +148,36 @@ namespace ParkingBot.Models.DialogControl
                 throw new Exception("Unable to talk with service");
             }
             catch(Exception e)
+            {
+                throw e;
+            }
+        }
+
+        private string DevolverMejorOpcion(double lat, double lng)
+        {
+            string retorno = string.Empty;
+            try
+            {
+                dtoCoordenadas nuevo = new dtoCoordenadas();
+                nuevo.lat = lat;
+                nuevo.lng = lng;
+                Response resp = new Response();
+                resp = new Services.RequestService().MakeHttpRequest("http://parkingwshack.gear.host/api/Parking/NearestParkings", "POST", nuevo);
+                if (resp != null)
+                {
+                    if (resp.STATUS)
+                    {
+                        RootObject respuesta = JObject.FromObject(resp.DATA).ToObject<RootObject>();
+                        var tiempo = respuesta.list[0].travelTime;
+                        var distancia = respuesta.list[0].travelDistance;
+                        //var masbarato = respuesta.list.OrderBy(x => x.place.costo).FirstOrDefault();
+                        retorno = "La opcion mas cercana (1) se encuentra a " + tiempo + " de tu destino y " + distancia + " de distancia";
+                    }
+                    return retorno;
+                }
+                throw new Exception("Unable to talk with service");
+            }
+            catch (Exception e)
             {
                 throw e;
             }
