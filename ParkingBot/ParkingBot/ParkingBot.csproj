@@ -134,6 +134,7 @@
     <Compile Include="Models\CardsFact.cs" />
     <Compile Include="Models\DialogControl\PlacaDialogDialog.cs" />
     <Compile Include="Models\DialogControl\RootDialog.cs" />
+    <Compile Include="Models\DialogControl\SolicitarPlacaDialog.cs" />
     <Compile Include="Models\Facebook\Facebook user channel data\FBQuickReplyData.cs" />
     <Compile Include="Models\Facebook\FacebookShareAction\Dependencies\FacebookAttachment.cs" />
     <Compile Include="Models\Facebook\FacebookShareAction\Dependencies\FacebookButton.cs" />

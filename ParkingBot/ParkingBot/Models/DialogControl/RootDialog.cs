@@ -21,6 +21,7 @@ namespace ParkingBot.Models.DialogControl
         private readonly string channelId;
         private RootObject param = new RootObject();
         private List<Location> ubicaciones = new List<Location>();
+        string recomendacion = string.Empty;
 
         public RootDialog(string channel)
         {
@@ -99,7 +100,7 @@ namespace ParkingBot.Models.DialogControl
                         elemento = item.Name;
                         nombres.Add(elemento);
                     }
-                    string recomendacion = DevolverMejorOpcion(lat, lng);
+                    recomendacion = DevolverMejorOpcion(lat, lng);
                     var cards= constructorcartas.CreateHeroCards(ubicaciones,locationNames:nombres);
                     respuesta.Attachments = cards.Select(c => c.ToAttachment()).ToList();
 
@@ -125,9 +126,13 @@ namespace ParkingBot.Models.DialogControl
         {
             var message = await result;
             FBQuickReplyData elemento = message.ChannelData.ToObject<FBQuickReplyData>();
-            var valorelegido = elemento.message.quick_reply.payload ?? "MenuPrincipal";
+            var valorelegido = elemento.message.quick_reply.payload ?? "SOLOVOLVER";
             if (!string.IsNullOrEmpty(message.Text))
             {
+                if (valorelegido == "SOLOVOLVER")
+                {
+                    context.Done<string>(null);
+                }
                 context.Call(new PlacaDialogDialog(param, valorelegido), PlacaDialogDialogResumeAfter);
             }
 
@@ -142,6 +147,7 @@ namespace ParkingBot.Models.DialogControl
                 {
                     var recomienda = context.MakeMessage();
                     recomienda.SuggestedActions = MenuFact.DetallesQuickReplies(ubicaciones.Count);
+                    recomienda.Text = recomendacion;
                     await context.PostAsync(recomienda);
                     context.Wait(this.QuickReplySelectedAsync);
                 }

@@ -18,5 +18,16 @@ namespace ParkingBot.Models
             }
             return a;
         }
+
+        public static SuggestedActions OpcionesQuickReplies()
+        {
+            SuggestedActions a = new SuggestedActions();
+            a.Actions = new List<CardAction>() {
+                CardsFact.GetCardAction(ActionTypes.PostBack,"SI",valor:"RESERVAR",textomuestra:"SI"),
+                CardsFact.GetCardAction(ActionTypes.PostBack,"NO",valor:"EXITO",textomuestra:"NO"),
+                CardsFact.GetCardAction(ActionTypes.PostBack,"Volver",valor:"SOLOVOLVER",textomuestra:"Volver")
+            };
+            return a;
+        }
     }
 }
