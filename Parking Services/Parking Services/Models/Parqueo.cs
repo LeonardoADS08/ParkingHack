@@ -38,13 +38,21 @@ namespace Parking_Services.Models
 
         public bool HorarioValido()
         {
-            int horaActual = DateTime.Now.Hour;
-            foreach (Tuple<int, int> val in horario)
+            try
             {
-                // Si hora actual es menor a hora de apertura o es mayor a hora de cierra, no esta disponible.
-                if (val.Item1 < horaActual || horaActual >= val.Item2) return false;
+                int horaActual = DateTime.Now.Hour;
+                foreach (Tuple<int, int> val in horario)
+                {
+                    // Si hora actual es menor a hora de apertura o es mayor a hora de cierra, no esta disponible.
+                    if (val.Item1 < horaActual || horaActual >= val.Item2) return false;
+                }
+                return true;
             }
-            return true;
+            catch
+            {
+                return false;
+            }
+            
         }
     }
 }

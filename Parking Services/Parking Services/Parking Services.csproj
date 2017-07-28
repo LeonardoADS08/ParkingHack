@@ -131,6 +131,7 @@
     <Compile Include="Models\Encargado.cs" />
     <Compile Include="Models\Historia.cs" />
     <Compile Include="Models\Parqueo.cs" />
+    <Compile Include="Models\Ubicacion.cs" />
     <Compile Include="Models\Usuario.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

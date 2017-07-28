@@ -33,25 +33,30 @@ namespace Parking_Services.GoogleMaps
                 // Se verifica si esta disponible
                 // Se verifica que este dentro de la hora de atención.
                 if (!val.Disponibilidad || !val.HorarioValido()) continue;
-                
+
                 Google.Maps.DistanceMatrix.DistanceMatrixRequest distanceRequest = new Google.Maps.DistanceMatrix.DistanceMatrixRequest()
                 {
-                    WaypointsOrigin = new List<Google.Maps.Location> { new Google.Maps.LatLng(initLat, initLng ) },
+                    WaypointsOrigin = new List<Google.Maps.Location> { new Google.Maps.LatLng(initLat, initLng) },
                     WaypointsDestination = new List<Google.Maps.Location> { new Google.Maps.LatLng(val.Latitud, val.Longitud) },
                     Sensor = false
                 };
 
-                var response = new Google.Maps.DistanceMatrix.DistanceMatrixService().GetResponse(distanceRequest);
-
-                result.List.Add(
-                   new TravelResult
-                    (val,
-                    response.Rows.First().Elements.First().distance.Text,
-                    response.Rows.First().Elements.First().duration.Text,
-                    Convert.ToInt32(response.Rows.First().Elements.First().distance.Value),
-                    Convert.ToInt32(response.Rows.First().Elements.First().duration.Value)
-                    ));
-                Console.WriteLine(response.Rows.First().Elements.First().duration.Value);
+                try
+                {
+                    var response = new Google.Maps.DistanceMatrix.DistanceMatrixService().GetResponse(distanceRequest);
+                    result.List.Add(
+                        new TravelResult
+                        (val,
+                        response.Rows.First().Elements.First().distance.Text,
+                        response.Rows.First().Elements.First().duration.Text,
+                        Convert.ToInt32(response.Rows.First().Elements.First().distance.Value),
+                        Convert.ToInt32(response.Rows.First().Elements.First().duration.Value)
+                        ));
+                }
+                catch
+                {
+                    return null;
+                }
             }
 
             // Se ordena por tiempo o distancia
@@ -60,5 +65,6 @@ namespace Parking_Services.GoogleMaps
 
             return result;
         }
+
     }
 }
