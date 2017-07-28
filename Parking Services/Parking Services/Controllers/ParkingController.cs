@@ -16,6 +16,7 @@ namespace Parking_Services.Controllers
     {
         public JObject NearestParkings(JObject rawOrigin)
         {
+            Models.Respuestas res = new Models.Respuestas();
             try
             {
                 Services.RequestService request = new Services.RequestService();
@@ -29,13 +30,21 @@ namespace Parking_Services.Controllers
                 GoogleMaps.ParkingRequest parkingRequest = new GoogleMaps.ParkingRequest(origin.lat, origin.lng, destinations);
                 var parkingResult = parkingRequest.Calculate();
 
-                return JObject.FromObject(parkingResult);
+                
+                res.STATUS = true;
+                res.MESSAGE = "OK";
+                res.DATA = parkingResult;
+
+                return JObject.FromObject(res);
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("ERROR: " + ex.Message.ToString());
+                res.STATUS = false;
+                res.MESSAGE = ex.Message;
+                res.DATA = null;
+
+                return JObject.FromObject(res);
             }
-            return null;
         }
     }
 }
