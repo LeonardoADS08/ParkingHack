@@ -6,27 +6,36 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using System.Diagnostics;
+using System.Text;
+using System.IO;
 
 namespace Parking_Services.Controllers
 {
     public class ParkingController : ApiController
     {
-        public JObject NearestParkings(JObject rawOrigin, JObject rawDestinations)
+        public JObject NearestParkings(JObject rawOrigin)
         {
             try
             {
-                List<Models.Parqueo> destinations = JArray.Parse(JsonConvert.SerializeObject(rawDestinations)).ToObject<List<Models.Parqueo>>();
-                Models.Ubicacion origin = JArray.Parse(JsonConvert.SerializeObject(rawOrigin)).ToObject<Models.Ubicacion>();
-                GoogleMaps.ParkingRequest request = new GoogleMaps.ParkingRequest(origin.Lat, origin.Lng, destinations);
-                var result = request.Calculate();
+                Services.RequestService request = new Services.RequestService();
+                
+                string Response = request.MakeHttpRequestString("https://parkinghack.herokuapp.com/api/parkingspot");
+
+                List<Models.Parqueo> destinations = JArray.Parse(Response).ToObject<List<Models.Parqueo>>();
+                Debug.WriteLine(destinations.Count);
+
+                Models.Ubicacion origin = rawOrigin.ToObject<Models.Ubicacion>();
+                GoogleMaps.ParkingRequest parkingRequest = new GoogleMaps.ParkingRequest(origin.lat, origin.lng, destinations);
+                var parkingResult = parkingRequest.Calculate();
+
+                return JObject.FromObject(parkingResult);
             }
-            catch
+            catch (Exception ex)
             {
-                return null;
+                Debug.WriteLine("ERROR: " + ex.Message.ToString());
             }
-
-
-            return new JObject();
+            return null;
         }
     }
 }

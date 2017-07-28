@@ -2,12 +2,19 @@
 {
     public class Encargado
     {
-        private int id;
-        private string nombre;
-        private string telefono;
+        public string _id { get; set; }
+        public string nombre { get; set; }
+        public string telefono { get; set; }
+        public int __v { get; set; }
+        public bool active { get; set; }
 
-        public int Id { get => id; set => id = value; }
-        public string Nombre { get => nombre; set => nombre = value; }
-        public string Telefono { get => telefono; set => telefono = value; }
+        public Encargado()
+        {
+            _id = "";
+            nombre = "";
+            telefono = "";
+            __v = 0;
+            active = true;
+        }
     }
 }
