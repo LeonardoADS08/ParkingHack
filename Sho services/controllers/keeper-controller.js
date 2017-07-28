@@ -1,7 +1,7 @@
 var mongoose = require("mongoose");
 var Keeper = mongoose.model("Keeper");
 var helpers = require("./helpers.js");
-var messages = require("../messages.js")
+var messages = require("../messages.js");
 module.exports.prueba = function(req,res){
     res.status(200).json({
         message:"funciona :)"

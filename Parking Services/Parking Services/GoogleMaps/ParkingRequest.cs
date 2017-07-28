@@ -8,12 +8,10 @@ namespace Parking_Services.GoogleMaps
 {
     public class ParkingRequest
     {
-        double initLat, initLng;
-        List<Models.Parqueo> destination;
 
-        public double InitLat { get => initLat; set => initLat = value; }
-        public double InitLng { get => initLng; set => initLng = value; }
-        public List<Parqueo> Destination { get => destination; set => destination = value; }
+        public double initLat { get; set; }
+        public double initLng { get; set; }
+        public List<Parqueo> destination { get; set; }
 
         public ParkingRequest(double initialLatitude, double initialLongitude, List<Models.Parqueo> destinations)
         {
@@ -32,19 +30,19 @@ namespace Parking_Services.GoogleMaps
             {
                 // Se verifica si esta disponible
                 // Se verifica que este dentro de la hora de atención.
-                if (!val.Disponibilidad || !val.HorarioValido()) continue;
+               // if (!val.disponibilidad || !val.HorarioValido()) continue;
 
                 Google.Maps.DistanceMatrix.DistanceMatrixRequest distanceRequest = new Google.Maps.DistanceMatrix.DistanceMatrixRequest()
                 {
                     WaypointsOrigin = new List<Google.Maps.Location> { new Google.Maps.LatLng(initLat, initLng) },
-                    WaypointsDestination = new List<Google.Maps.Location> { new Google.Maps.LatLng(val.Latitud, val.Longitud) },
+                    WaypointsDestination = new List<Google.Maps.Location> { new Google.Maps.LatLng(val.latitude, val.longitude) },
                     Sensor = false
                 };
 
                 try
                 {
                     var response = new Google.Maps.DistanceMatrix.DistanceMatrixService().GetResponse(distanceRequest);
-                    result.List.Add(
+                    result.list.Add(
                         new TravelResult
                         (val,
                         response.Rows.First().Elements.First().distance.Text,

@@ -24,3 +24,5 @@ process.on("SIGINT", function() {
 
 require("./models/user-model.js");
 require("./models/keeper-model.js");
+require("./models/parkingSpot-model.js");
+require("./models/history-model.js");

@@ -7,13 +7,9 @@ namespace Parking_Services.Models
 {
     public class Historia
     {
-        private int id;
-        private DateTime fecha;
-        private Parqueo lugar;
-
-        public int Id { get => id; set => id = value; }
-        public DateTime Fecha { get => fecha; set => fecha = value; }
-        public Parqueo Lugar { get => lugar; set => lugar = value; }
+        public int id { get; set; }
+        public DateTime fecha { get; set; }
+        public Parqueo lugar { get; set; }
 
         public Historia()
         {
