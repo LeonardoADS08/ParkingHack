@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+    <style>
+        #map {
+        height: 300px;
+            width: 300px;
+      }
+      /* Optional: Makes the sample page fill the window. */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+        #Pform{
+            padding: 40px;
+            margin: 40px;
+            border-style: solid;
+            border-width: 1px;
+            border-radius: 10px;
+            align-content: center;
+        }
+        body{
+            align-content: center;
+        }
+      
+    </style>
+  </head>
+  <body>
+      <div class="offset-md-4 col-md-4">
+      <form id ="Pform" class="form-horizontal container">
+        <fieldset>
+
+        <!-- Form Name -->
+        <legend>Agregar Parqueo</legend>
+
+        <!-- Text input-->
+        <div class="form-group">
+          <label class=" control-label" for="nombreKeeper">Nombre Cuidador</label>  
+          <div class="">
+          <input id="nombreKeeper" name="nombreKeeper" type="text" placeholder="Juan Arana" class="form-control input-md" required="">
+          <span class="form-text text-muted">Nombre de la persona que cuida el parqueo</span>  
+          </div>
+        </div>
+
+        <!-- Text input-->
+        <div class="form-group">
+          <label class="control-label" for="telefonoKeeper">Telefono Cuidador</label>  
+          <div class="">
+          <input id="telefonoKeeper" name="telefonoKeeper" type="text" placeholder="70828371" class="form-control input-md" required="">
+          <span class="form-text text-muted">Telefono de la persona que cuida el parqueo</span>  
+          </div>
+        </div>
+        <!-- mapa -->
+        <label>Ubicacion</label>
+        <div class="form-group">
+          <label class=" control-label" for="longitude">Longitude</label>  
+          <div class="">
+          <input id="longitude" name="longitude" type="text" placeholder="70828371" class="form-control input-md" required="true">
+          <span class="form-text text-muted">Telefono de la persona que cuida el parqueo</span>  
+          </div>
+        </div>
+        <div class="form-group">
+          <label class=" control-label" for="Latitude">Latitude</label>  
+          <div class="">
+          <input id="latitude" name="latitude" type="text" placeholder="70828371" class="form-control input-md" required="true">
+          <span class="form-text text-muted">Telefono de la persona que cuida el parqueo</span>  
+          </div>
+        </div>
+        <div class = "form-group" id="map"></div>
+
+        <!-- Text input-->
+        <div class="form-group">
+          <label class=" control-label" for="nombrePark">Nombre Parqueo</label>  
+          <div class="">
+          <input id="nombrePark" name="nombrePark" type="text" placeholder="parque plaza 24" class="form-control input-md" required="">
+          <span class="form-text text-muted">nombre del parqueo</span>  
+          </div>
+        </div>
+
+        <!-- Multiple Radios -->
+        <div class="form-group">
+          <label class=" control-label" for="tipo">Tipo parqueo</label>
+          <div class="">
+          <div class="radio">
+            <label for="tipo-0">
+              <input type="radio" name="tipo" id="tipoPublico" value="publico">
+              Publico
+            </label>
+            </div>
+          <div class="radio">
+            <label for="tipo-1">
+              <input type="radio" name="tipo" id="tipoPrivado" value="privado" checked="checked">
+              Privado
+            </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Text input-->
+        <div class="form-group" id="CostoShow">
+          <label class=" control-label" for="Costo">Costo Bs</label>  
+          <div class="">
+          <input id="Costo" name="Costo" type="text" placeholder="20" class="form-control input-md" required="">
+          <span class="form-text text-muted">Costo del parqueo</span>  
+          </div>
+        </div>
+
+        </fieldset>
+          <label>Horarios</label>
+      <div class="container">
+        <div class="row clearfix">
+            <div class="column">
+                <table class="table table-bordered table-hover" id="tab_logic">
+                    <thead>
+                        <tr >
+                            <th class="text-center">
+                                #
+                            </th>
+                            <th class="text-center">
+                                Hr Inicio
+                            </th>
+                            <th class="text-center">
+                                Hr Fin
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr id='addr0'>
+                            <td>
+                            1
+                            </td>
+                            <td>
+                            <input type="text" name='horario[0][0]'  placeholder='8' class="form-control"/>
+                            </td>
+                            <td>
+                            <input type="text" name='mail[0][1]' placeholder='12' class="form-control"/>
+                            </td>
+                        </tr>
+                        <tr id='addr1'></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+          <a id="add_row" class="btn btn-default pull-left"><button type="button" class="btn btn-secondary">Add Row</button></a><a id='delete_row' class="pull-right btn btn-default"><button type="button" class="btn btn-secondary">Delete Row</button></a>
+    </div>
+        <button class="btn btn-primary" type="submit">Submit</button>
+    </form>
+    </div>
+    <!-- jQuery first, then Tether, then Bootstrap JS. -->
+    <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+      <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+  </body>
+    <script type="text/javascript">
+             $(document).ready(function(){
+                  var i=1;
+                 $("#add_row").click(function(){
+                  $('#addr'+i).html("<td>"+ (i+1) +"</td><td><input name='horario["+i+"][0]' type='text' placeholder='14' class='form-control input-md'  /> </td><td><input  name='horario["+i+"][1]' type='text' placeholder='18'  class='form-control input-md'></td>");
+
+                  $('#tab_logic').append('<tr id="addr'+(i+1)+'"></tr>');
+                  i++; 
+              });
+                 $("#delete_row").click(function(){
+                     if(i>1){
+                     $("#addr"+(i-1)).html('');
+                     i--;
+                     }
+                 });
+            });
+            $(document).ready(function() {
+               $('input[type="radio"]').click(function() {
+                   if($(this).attr('id') == 'tipoPrivado') {
+                        $('#CostoShow').show();           
+                   }
+
+                   else {
+                        $('#CostoShow').hide();   
+                   }
+               });
+            });
+                 
+        function initMap() {
+            var MyLoc = {lat: -17.78, lng: -63.18};
+            var map = new google.maps.Map(document.getElementById('map'), {
+              center: MyLoc,
+              zoom: 6
+            });
+            var infoWindow = new google.maps.InfoWindow({map: map});
+            
+            var marker = new google.maps.Marker({
+                draggable: true,
+                position: MyLoc, 
+                map: map,
+                title: "Your location"
+            });
+            
+            google.maps.event.addListener(marker, 'dragend', function (event) {
+                document.getElementById("latitude").value = this.getPosition().lat();
+                document.getElementById("longitude").value = this.getPosition().lng();
+            });
+            
+            // Try HTML5 geolocation.
+            if (navigator.geolocation) {
+              navigator.geolocation.getCurrentPosition(function(position) {
+                var pos = {
+                  lat: position.coords.latitude,
+                  lng: position.coords.longitude
+                };
+
+                infoWindow.setPosition(pos);
+                infoWindow.setContent('Location found.');
+                map.setCenter(pos);
+              }, function() {
+                handleLocationError(true, infoWindow, map.getCenter());
+              });
+            } else {
+              // Browser doesn't support Geolocation
+              handleLocationError(false, infoWindow, map.getCenter());
+            }
+          }
+        
+
+          function handleLocationError(browserHasGeolocation, infoWindow, pos) {
+            infoWindow.setPosition(pos);
+            infoWindow.setContent(browserHasGeolocation ?
+                                  'Error: The Geolocation service failed.' :
+                                  'Error: Your browser doesn\'t support geolocation.');
+          }
+        
+        $("#Pform").on("submit",function(event){
+            event.preventDefault();
+            var myTableArray = [];
+            $("table#tab_logic tr").each(function() {
+                var arrayOfThisRow = [];
+                var tableData = $(this).find('td');
+                if (tableData.length > 0) {
+                    tableData.each(function() { arrayOfThisRow.push($(this).text()); });
+                    myTableArray.push(arrayOfThisRow);
+                }
+            });
+            $.post("http://localhost:8080/api/parkingSpotBoth",{
+                nombreKeeper:$("#nombreKeeper").val(),
+                telefonoKeeper:$("#telefonoKeeper").val(),
+                longitude: $("#longitude").val(),
+                latitude: $("#latitude").val(),
+                nombrePark: $("#nombrePark").val(),
+                tipo:$('input[name=tipo]:checked').val(),
+                costo:$("#Costo").val(),
+                horario:myTableArray
+            },function(data, status){
+                window.location.reload();
+            });
+        });
+        
+    </script>
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDpH2YKkkBLNFUoqu-khQQaWaai8wDCvYg&callback=initMap">
+    </script>
+</html>

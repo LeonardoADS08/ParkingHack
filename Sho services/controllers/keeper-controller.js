@@ -1,5 +1,6 @@
 var mongoose = require("mongoose");
 var Keeper = mongoose.model("Keeper");
+var Spot = mongoose.model("ParkingSpot");
 var helpers = require("./helpers.js");
 var messages = require("../messages.js");
 module.exports.prueba = function(req,res){
@@ -71,4 +72,27 @@ module.exports.deleteKeeper = function(req, res){
     }).catch(err=>{
         helpers.handleError(err,res)
     });
+}
+module.exports.addPark = function(req, res){
+    var keeper = {
+        nombre : req.body.nombreKeeper,
+        telefono:req.body.telefonoKeeper
+    };
+    var park = {
+        nombre : req.body.nombrePark,
+        tipo: req.body.tipo,
+        costo: req.body.costo,
+        horario : req.body.horario,
+        longitude: req.body.longitude,
+        latitude: req.body.latitude
+    };
+    Keeper.create(keeper).then(keeper=>{
+        park.encargado = keeper._id;
+        return Spot.create(park);
+    }).then(park=>{
+        res.status(201).json(park);
+    }).catch(err=>{
+        helpers.handleError(err,res)
+    });
+    
 }

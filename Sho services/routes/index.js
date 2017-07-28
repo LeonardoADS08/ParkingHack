@@ -36,6 +36,8 @@ router.route("/parkingSpot/:spotId")
 .put(ctrlParkingSpot.updateSpot)
 .delete(ctrlParkingSpot.deleteSpot);
 
+router.route("/parkingSpotBoth").post(ctrlKeeper.addPark);
+
 //HISTORY
 router.route("/history")
 .post(ctrlHistory.addHistory)

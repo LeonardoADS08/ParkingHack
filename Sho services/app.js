@@ -13,6 +13,7 @@ app.use(bodyParser.urlencoded({extended : true}));
 app.use(bodyParser.json());
 //routes 
 app.use("/api", routes);
+app.use(express.static("public"));
 //setting app port
 app.set('port',(process.env.PORT || 8080));
 var server = app.listen(app.get('port'), function() {
