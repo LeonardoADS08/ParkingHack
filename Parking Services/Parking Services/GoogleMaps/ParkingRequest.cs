@@ -20,7 +20,7 @@ namespace Parking_Services.GoogleMaps
             destination = destinations;
         }
 
-        public TravelResultList Calculate(bool sortByTime = true)
+        public TravelResultList Calculate(bool sortByTime = true, bool validationsOn = true)
         {
             // Lista de resultados
             TravelResultList result = new TravelResultList();
@@ -30,7 +30,7 @@ namespace Parking_Services.GoogleMaps
             {
                 // Se verifica si esta disponible
                 // Se verifica que este dentro de la hora de atención.
-               // if (!val.disponibilidad || !val.HorarioValido()) continue;
+                if (validationsOn && !val.HorarioValido()) continue;
 
                 Google.Maps.DistanceMatrix.DistanceMatrixRequest distanceRequest = new Google.Maps.DistanceMatrix.DistanceMatrixRequest()
                 {
@@ -60,6 +60,7 @@ namespace Parking_Services.GoogleMaps
             // Se ordena por tiempo o distancia
             if (sortByTime) result.SortByTime();
             else result.SortByDistance();
+
 
             return result;
         }

@@ -33,5 +33,6 @@ namespace Parking_Services.GoogleMaps
         public string travelTime { get; set; }
         public int valueTravelDistance { get; set; }
         public int valueTravelTime { get; set; }
+        
     }
 }

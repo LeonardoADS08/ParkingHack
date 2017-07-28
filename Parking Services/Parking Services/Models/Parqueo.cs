@@ -36,9 +36,9 @@ namespace Parking_Services.Models
                 foreach (List<int> val in horario)
                 {
                     // Si hora actual es menor a hora de apertura o es mayor a hora de cierra, no esta disponible.
-                    if (val[0] < horaActual || horaActual >= val[1]) return false;
+                    if (val[0] >= horaActual && horaActual < val[1]) return true;
                 }
-                return true;
+                return false;
             }
             catch
             {
