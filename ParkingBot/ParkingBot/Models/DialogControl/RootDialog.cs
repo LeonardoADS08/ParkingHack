@@ -3,6 +3,7 @@ using Microsoft.Bot.Builder.Location;
 using Microsoft.Bot.Builder.Location.Bing;
 using Microsoft.Bot.Connector;
 using Newtonsoft.Json.Linq;
+using ParkingBot.Models.Facebook.Facebook_user_channel_data;
 using ParkingBot.Models.servicemodels;
 using ParkingBot.Models.servicemodels.nearest;
 using System;
@@ -18,6 +19,8 @@ namespace ParkingBot.Models.DialogControl
     public class RootDialog:IDialog<string>
     {
         private readonly string channelId;
+        private RootObject param = new RootObject();
+        private List<Location> ubicaciones = new List<Location>();
 
         public RootDialog(string channel)
         {
@@ -87,7 +90,7 @@ namespace ParkingBot.Models.DialogControl
                     LocationCardBuilder constructorcartas = new LocationCardBuilder(apiKey,nuevo);
                     double lat = (double)coordenadas.Latitude;
                     double lng = (double)coordenadas.Longitude;
-                    List<Location> ubicaciones = DevolverPosibles(lat, lng);
+                    ubicaciones = DevolverPosibles(lat, lng);
                     List<string> nombres = new List<string>();
                     foreach(var item in ubicaciones)
                     {
@@ -106,13 +109,53 @@ namespace ParkingBot.Models.DialogControl
                     
                     await context.PostAsync(respuesta);
                     await context.PostAsync(recomienda);
+                    param = DevolverRequest(lat, lng);
+                    context.Wait(this.QuickReplySelectedAsync);
                 }
 
-                context.Done<string>(null);
+                //context.Done<string>(null);
             }
             catch(Exception e)
             {
                 await context.PostAsync("Error: " + e.Message);
+            }
+        }
+
+        private async Task QuickReplySelectedAsync(IDialogContext context,IAwaitable<IMessageActivity> result)
+        {
+            var message = await result;
+            FBQuickReplyData elemento = message.ChannelData.ToObject<FBQuickReplyData>();
+            var valorelegido = elemento.message.quick_reply.payload ?? "MenuPrincipal";
+            if (!string.IsNullOrEmpty(message.Text))
+            {
+                context.Call(new PlacaDialogDialog(param, valorelegido), PlacaDialogDialogResumeAfter);
+            }
+
+        }
+
+        private async Task PlacaDialogDialogResumeAfter(IDialogContext context, IAwaitable<string> result)
+        {
+            try
+            {
+                var respuesta = await result;
+                if (respuesta == "SOLOVOLVER")
+                {
+                    var recomienda = context.MakeMessage();
+                    recomienda.SuggestedActions = MenuFact.DetallesQuickReplies(ubicaciones.Count);
+                    await context.PostAsync(recomienda);
+                    context.Wait(this.QuickReplySelectedAsync);
+                }
+                else
+                {
+                    if (respuesta == "EXITO")
+                    {
+                        context.Done<string>(null);
+                    }
+                }
+            }
+            catch(Exception e)
+            {
+                context.Fail(e);
             }
         }
 
@@ -148,6 +191,33 @@ namespace ParkingBot.Models.DialogControl
                 throw new Exception("Unable to talk with service");
             }
             catch(Exception e)
+            {
+                throw e;
+            }
+        }
+
+        private RootObject DevolverRequest(double lat, double lng)
+        {
+            RootObject retorno = new RootObject();
+            try
+            {
+                dtoCoordenadas nuevo = new dtoCoordenadas();
+                nuevo.lat = lat;
+                nuevo.lng = lng;
+                Response resp = new Response();
+                resp = new Services.RequestService().MakeHttpRequest("http://parkingwshack.gear.host/api/Parking/NearestParkings", "POST", nuevo);
+                if (resp != null)
+                {
+                    if (resp.STATUS)
+                    {
+                        RootObject respuesta = JObject.FromObject(resp.DATA).ToObject<RootObject>();
+                        retorno = respuesta;
+                    }
+                    return retorno;
+                }
+                throw new Exception("Unable to talk with service");
+            }
+            catch (Exception e)
             {
                 throw e;
             }

@@ -14,7 +14,7 @@ namespace ParkingBot.Models
             a.Actions = new List<CardAction>();
             for (int i = 0; i < opciones; i++)
             {
-                a.Actions.Add(CardsFact.GetCardAction(ActionTypes.ImBack, "Detalles de " + (i+1).ToString(), valor: "VER" + (i+1).ToString(), textomuestra: (i+1).ToString()));
+                a.Actions.Add(CardsFact.GetCardAction(ActionTypes.PostBack, "Detalles de " + (i+1).ToString(), valor: "VER" + (i+1).ToString(), textomuestra: (i+1).ToString()));
             }
             return a;
         }
