@@ -1,17 +1,28 @@
 ﻿using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Builder.Location;
+using Microsoft.Bot.Builder.Location.Bing;
 using Microsoft.Bot.Connector;
+using Newtonsoft.Json.Linq;
+using ParkingBot.Models.servicemodels;
+using ParkingBot.Models.servicemodels.nearest;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
+using System.Web.Configuration;
 
 namespace ParkingBot.Models.DialogControl
 {
     [Serializable]
-    public class RootDialog:IDialog<object>
+    public class RootDialog:IDialog<string>
     {
-        public Response resp = new Response();
+        private readonly string channelId;
+
+        public RootDialog(string channel)
+        {
+            channelId = channel;
+        }
 #pragma warning disable CS1998
         public async Task StartAsync(IDialogContext context)
 #pragma warning restore CS1998
@@ -31,10 +42,17 @@ namespace ParkingBot.Models.DialogControl
             saludo.Text = $"Hola {procesarNombre(context.Activity.From.Name)}!!!";
             await context.PostAsync(saludo);
             await Task.Delay(1500);
-            saludo.Text = " Te ayudare a conseguir un parqueo. Enviame la ubicacion de tu destino";
+            saludo.Text = " Te ayudare a conseguir un parqueo..";
             //TODO: Insertar quick reply with location
-            await context.PostAsync(saludo);
-            context.Call(new DisponibilidadDialog(), this.DisponibilidadDialogResumeAfter);
+            //await context.PostAsync(saludo);
+
+            var apiKey = WebConfigurationManager.AppSettings["BingMapsApiKey"];
+            LocationResourceManager x = new LocationResourceManager();
+           
+            var options = LocationOptions.UseNativeControl | LocationOptions.SkipFinalConfirmation | LocationOptions.SkipFavorites;
+            var locationDialog = new LocationDialog(apiKey, channelId, saludo.Text, options );
+            context.Call(locationDialog, this.ResumeAfterLocationDialogAsync);
+            //context.Call(new DisponibilidadDialog(), this.DisponibilidadDialogResumeAfter);
         }
 
         private string procesarNombre(string name)
@@ -53,9 +71,78 @@ namespace ParkingBot.Models.DialogControl
             return nombre;
         }
 
-        private async Task DisponibilidadDialogResumeAfter(IDialogContext context, IAwaitable<OPControls.> result)
+        private async Task ResumeAfterLocationDialogAsync(IDialogContext context, IAwaitable<Microsoft.Bot.Connector.Place> result)
         {
+            try
+            {
+                var place = await result;
+                if (place != null)
+                {
+                    var coordenadas = place.GetGeoCoordinates();
+                    //await context.PostAsync("Coordenadas: " + coordenadas.Latitude + "," + coordenadas.Longitude);
+                    var respuesta = context.MakeMessage();
+                    respuesta.AttachmentLayout = "carousel";
+                    var apiKey = WebConfigurationManager.AppSettings["BingMapsApiKey"];
+                    LocationResourceManager nuevo = new LocationResourceManager();
+                    LocationCardBuilder constructorcartas = new LocationCardBuilder(apiKey,nuevo);
+                    double lat = (double)coordenadas.Latitude;
+                    double lng = (double)coordenadas.Longitude;
+                    List<Location> ubicaciones = DevolverPosibles(lat, lng);
+                    List<string> nombres = new List<string>();
+                    foreach(var item in ubicaciones)
+                    {
+                        string elemento = string.Empty;
+                        elemento = item.Name;
+                        nombres.Add(elemento);
+                    }
+                    var cards= constructorcartas.CreateHeroCards(ubicaciones,locationNames:nombres);
+                    respuesta.Attachments = cards.Select(c => c.ToAttachment()).ToList();
+                    await context.PostAsync(respuesta);
+                }
 
+                context.Done<string>(null);
+            }
+            catch(Exception e)
+            {
+                await context.PostAsync("Error: " + e.Message);
+            }
+        }
+
+        private List<Location> DevolverPosibles(double lat, double lng)
+        {
+            List<Location> retorno = new List<Location>();
+            try
+            {
+                dtoCoordenadas nuevo = new dtoCoordenadas();
+                nuevo.lat = lat;
+                nuevo.lng = lng;
+                Response resp = new Response();
+                resp = new Services.RequestService().MakeHttpRequest("http://parkingwshack.gear.host/api/Parking/NearestParkings", "POST", nuevo);
+                if (resp != null)
+                {
+                    if (resp.STATUS)
+                    {
+                        RootObject respuesta = JObject.FromObject(resp.DATA).ToObject<RootObject>();
+                        foreach(var item in respuesta.list)
+                        {
+                            Location elemento = new Location();
+                            elemento.Point = new GeocodePoint();
+                            elemento.Point.Coordinates = new List<double>();
+                            elemento.Name = item.place.nombre;
+                            elemento.Point.Coordinates.Add(item.place.latitude);
+                            elemento.Point.Coordinates.Add(item.place.longitude);
+                            
+                            retorno.Add(elemento);
+                        }
+                    }
+                    return retorno;
+                }
+                throw new Exception("Unable to talk with service");
+            }
+            catch(Exception e)
+            {
+                throw e;
+            }
         }
     }
 }

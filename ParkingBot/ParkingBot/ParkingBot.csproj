@@ -58,6 +58,10 @@
       <HintPath>..\packages\Microsoft.Bot.Builder.3.9.0.0\lib\net46\Microsoft.Bot.Builder.Autofac.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.Bot.Builder.Location, Version=0.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Bot.Builder.Location.2.1.0\lib\net46\Microsoft.Bot.Builder.Location.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.Bot.Connector, Version=3.9.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Bot.Builder.3.9.0.0\lib\net46\Microsoft.Bot.Connector.dll</HintPath>
       <Private>True</Private>
@@ -128,6 +132,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\CardsFact.cs" />
+    <Compile Include="Models\DialogControl\PlacaDialogDialog.cs" />
     <Compile Include="Models\DialogControl\RootDialog.cs" />
     <Compile Include="Models\Facebook\Facebook user channel data\FBQuickReplyData.cs" />
     <Compile Include="Models\Facebook\FacebookShareAction\Dependencies\FacebookAttachment.cs" />
@@ -139,10 +144,17 @@
     <Compile Include="Models\Facebook\FacebookShareAction\Dependencies\FacebookShareButton.cs" />
     <Compile Include="Models\Facebook\FacebookShareAction\FBShareForwardAction.cs" />
     <Compile Include="Models\Response.cs" />
+    <Compile Include="Models\servicemodels\dtoCoordenadas.cs" />
+    <Compile Include="Models\servicemodels\nearest\RootObject.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\Mailing.cs" />
+    <Compile Include="Services\ProxyConection.cs" />
+    <Compile Include="Services\RequestService.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
+    <None Include="Properties\PublishProfiles\parkingbothack - FTP.pubxml" />
+    <None Include="Properties\PublishProfiles\parkingbothack - Web Deploy.pubxml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
