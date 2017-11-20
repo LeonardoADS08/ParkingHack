@@ -18,7 +18,7 @@ namespace ParkingBot.Services
             try
             {
                 MailMessage mail = new MailMessage();
-                mail.From = new MailAddress("prupsa1@gmail.com");
+                mail.From = new MailAddress("woops@woops.com");
 
                 // The important part -- configuring the SMTP client
                 SmtpClient smtp = new SmtpClient();
@@ -26,7 +26,7 @@ namespace ParkingBot.Services
                 smtp.EnableSsl = true;
                 smtp.DeliveryMethod = SmtpDeliveryMethod.Network; // [2] Added this
                 smtp.UseDefaultCredentials = false; // [3] Changed this
-                smtp.Credentials = new NetworkCredential(mail.From.Address, "promoupsa123");  // [4] Added this. Note, first parameter is NOT string.
+                smtp.Credentials = new NetworkCredential(mail.From.Address, "woops");  // [4] Added this. Note, first parameter is NOT string.
                 smtp.Host = "smtp.gmail.com";
 
                 //notificacion
